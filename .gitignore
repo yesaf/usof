@@ -1,0 +1,5 @@
+.idea
+/node_modules
+.DS_Store
+src/database/cards/images
+package-lock.json

@@ -39,10 +39,59 @@ module.exports.login = async (request, response) => {
     });
 };
 
-module.exports.register = (request, response) => {
-  response.json({
-    register: "This is register router"
-  });
+module.exports.register = async (request, response) => {
+  const { email, login, password, passwordConfirm } = request.body;
+
+  if (!email || !login || !password || !passwordConfirm) {
+    return response
+      .status(409)
+      .json({
+        type: "error",
+        msg: "All fields must be filled"
+      });
+  }
+
+  if (password !== passwordConfirm) {
+    return response
+      .status(409)
+      .json({
+        type: "error",
+        msg: "Password mismatch"
+      });
+  }
+
+  if (await User.checkExistEmail(email)) {
+    return response
+      .status(409)
+      .json({
+        type: "error",
+        msg: `This email "${email}" has already exist. Please choose another email`
+      });
+  }
+
+  if (await User.checkExistLogin(login)) {
+    return response
+      .status(409)
+      .json({
+        type: "error",
+        msg: `This login "${login}" is already taken. Please choose another login`
+      });
+  }
+
+  const result = await User.createNewUser({ email, login, password });
+
+  if (result.status === "ok") {
+    return response
+      .status(201)
+      .json(result);
+
+  }
+  return response
+    .status(409)
+    .json({
+      type: "error",
+      msg: "Something wrong! Try later"
+    });
 };
 
 module.exports.passwordReset = (request, response) => {

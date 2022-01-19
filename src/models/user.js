@@ -19,6 +19,19 @@ class User extends Model {
     }
   }
 
+  async findUserByEmail(email) {
+    try {
+      const rows = await this.DB.query(
+        'SELECT * FROM users WHERE email = ?',
+        email
+      );
+
+      return rows[0];
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
   async getAllUsers() {
     try {
       const rows = await this.DB.query('SELECT * FROM users');

@@ -94,6 +94,11 @@ module.exports.register = async (request, response) => {
     });
 };
 
+module.exports.logout = (request, response) => {
+  request.logout();
+  response.json({ status: "ok", msg: "Please Log In again" });
+};
+
 module.exports.passwordReset = (request, response) => {
   response.json({
     passwordReset: "This is password reset router"

@@ -29,14 +29,16 @@ class User extends Model {
     }
   }
 
-  async createNewUser({ full_name, email, login, role, password }, creator_id) {
-    if (!(await this.isAdmin(creator_id))) {
-      console.log(`Creator user is not admin! Permission denied!`);
+  async createNewUser({ full_name, email, login, role, password }) {
+    if (await this.checkExistLogin(login)) {
+      console.log(
+        `This login "${login}" is already taken. Please choose another login`
+      );
     } else {
       const isEmailExist = await this.checkExistEmail(email);
       if (isEmailExist) {
         console.log(
-          `This email "${email}" has already exist. Please choose an other email`
+          `This email "${email}" has already exist. Please choose another email`
         );
       } else {
         const salt = bcrypt.genSaltSync(10);
@@ -105,6 +107,19 @@ class User extends Model {
       const rows = await this.DB.query(
         'SELECT * FROM users WHERE email = ?',
         email
+      );
+
+      return !!rows[0].length;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async checkExistLogin(login) {
+    try {
+      const rows = await this.DB.query(
+        'SELECT * FROM users WHERE login = ?',
+        login
       );
 
       return !!rows[0].length;

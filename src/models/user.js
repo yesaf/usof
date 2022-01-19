@@ -19,6 +19,19 @@ class User extends Model {
     }
   }
 
+  async findUserByEmail(email) {
+    try {
+      const rows = await this.DB.query(
+        'SELECT * FROM users WHERE email = ?',
+        email
+      );
+
+      return rows[0];
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
   async getAllUsers() {
     try {
       const rows = await this.DB.query('SELECT * FROM users');
@@ -29,37 +42,40 @@ class User extends Model {
     }
   }
 
-  async createNewUser({ full_name, email, login, role, password }) {
-    if (await this.checkExistLogin(login)) {
+  async createNewUser({ fullName, email, login, role = 'user', password }) {
+    const isExistLogin = await this.checkExistLogin(login);
+    if (isExistLogin) {
       console.log(
         `This login "${login}" is already taken. Please choose another login`
       );
-    } else {
-      const isEmailExist = await this.checkExistEmail(email);
-      if (isEmailExist) {
-        console.log(
-          `This email "${email}" has already exist. Please choose another email`
-        );
-      } else {
-        const salt = bcrypt.genSaltSync(10);
-        const user = [
-          full_name,
-          email,
-          login,
-          role,
-          bcrypt.hashSync(password, salt),
-        ];
+      return;
+    }
+    const isEmailExist = await this.checkExistEmail(email);
 
-        try {
-          const result = await this.DB.query(
-            'INSERT INTO users (full_name, email, login, role, password) VALUES (?, ?, ?, ?, ?)',
-            user
-          );
-          console.log(result);
-        } catch (e) {
-          console.log(e);
-        }
-      }
+    if (isEmailExist) {
+      console.log(
+        `This email "${email}" has already exist. Please choose another email`
+      );
+      return;
+    }
+
+    const salt = bcrypt.genSaltSync(10);
+    const user = [
+      fullName,
+      email,
+      login,
+      role,
+      bcrypt.hashSync(password, salt),
+    ];
+
+    try {
+      const result = await this.DB.query(
+        'INSERT INTO users (full_name, email, login, role, password) VALUES (?, ?, ?, ?, ?)',
+        user
+      );
+      console.log(result);
+    } catch (e) {
+      console.log(e);
     }
   }
 
@@ -76,11 +92,11 @@ class User extends Model {
     }
   }
 
-  async updateUser(id, { full_name, email, login }) {
+  async updateUser(id, { fullName, email, login }) {
     try {
       const rows = await this.DB.query(
         'UPDATE users SET full_name=?, email=?, login=? WHERE account_id = ?',
-        [full_name, email, login, id]
+        [fullName, email, login, id]
       );
 
       console.log(rows);

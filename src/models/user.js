@@ -89,11 +89,11 @@ class User extends Model {
     }
   }
 
-  async updateUser(id, { full_name, email, login }) {
+  async updateUser(id, { fullName, email, login }) {
     try {
       const rows = await this.DB.query(
         'UPDATE users SET full_name=?, email=?, login=? WHERE account_id = ?',
-        [full_name, email, login, id]
+        [fullName, email, login, id]
       );
 
       console.log(rows);

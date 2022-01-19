@@ -42,7 +42,7 @@ class User extends Model {
     }
   }
 
-  async createNewUser({ fullName, email, login, role = 'user', password }) {
+  async createNewUser({ fullName = '', email, login, role = 'user', password }) {
     const salt = bcrypt.genSaltSync(10);
     const user = [
       fullName,

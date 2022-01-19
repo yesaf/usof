@@ -30,7 +30,6 @@ module.exports.login = async (request, response) => {
   const token = jwt.sign({
     email: user.email,
     userId: user.id,
-    iss: 'http://localhost:4000'
   }, keys.jwt, { expiresIn: 3600 });
 
   return response

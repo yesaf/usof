@@ -43,22 +43,6 @@ class User extends Model {
   }
 
   async createNewUser({ fullName, email, login, role = 'user', password }) {
-    const isExistLogin = await this.checkExistLogin(login);
-    if (isExistLogin) {
-      console.log(
-        `This login "${login}" is already taken. Please choose another login`
-      );
-      return;
-    }
-    const isEmailExist = await this.checkExistEmail(email);
-
-    if (isEmailExist) {
-      console.log(
-        `This email "${email}" has already exist. Please choose another email`
-      );
-      return;
-    }
-
     const salt = bcrypt.genSaltSync(10);
     const user = [
       fullName,
@@ -74,47 +58,55 @@ class User extends Model {
         user
       );
       console.log(result);
+      return { status: 'ok' };
     } catch (e) {
       console.log(e);
+      return { status: 'error', msg: e.sqlMessage };
     }
   }
 
   async uploadAvatar(id, avatar) {
     try {
-      const rows = await this.DB.query(
+      const result = await this.DB.query(
         'UPDATE users SET profile_picture=? WHERE account_id = ?',
         [avatar, id]
       );
 
-      console.log(rows);
+      console.log(result);
+      return { status: 'ok' };
     } catch (e) {
       console.log(e);
+      return { status: 'error', msg: e.sqlMessage };
     }
   }
 
   async updateUser(id, { fullName, email, login }) {
     try {
-      const rows = await this.DB.query(
+      const result = await this.DB.query(
         'UPDATE users SET full_name=?, email=?, login=? WHERE account_id = ?',
         [fullName, email, login, id]
       );
 
-      console.log(rows);
+      console.log(result);
+      return { status: 'ok' };
     } catch (e) {
       console.log(e);
+      return { status: 'error', msg: e.sqlMessage };
     }
   }
 
   async deleteUser(id) {
     try {
-      const rows = await this.DB.query(
+      const result = await this.DB.query(
         'DELETE FROM users WHERE account_id = ?',
         id
       );
 
-      console.log(rows);
+      console.log(result);
+      return { status: 'ok' };
     } catch (e) {
       console.log(e);
+      return { status: 'error', msg: e.sqlMessage };
     }
   }
 

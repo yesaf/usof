@@ -16,10 +16,10 @@ CREATE TABLE IF NOT EXISTS users
 
 CREATE TABLE IF NOT EXISTS posts
 (
-    post_id   INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    author_id INT UNSIGNED NOT NULL,
-    title     VARCHAR(255) NOT NULL,
-    content   VARCHAR(255) NOT NULL,
+    post_id      INT UNSIGNED                NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    author_id    INT UNSIGNED                NOT NULL,
+    title        VARCHAR(255)                NOT NULL,
+    content      TEXT                        NOT NULL,
     status       ENUM ('active', 'inactive') NOT NULL,
     publish_date TIMESTAMP                   NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (author_id) REFERENCES users (account_id)
@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS categories
 
 CREATE TABLE IF NOT EXISTS categories_posts
 (
-    id          INT          NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    id          INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     post_id     INT UNSIGNED NOT NULL,
     category_id INT UNSIGNED NOT NULL,
     FOREIGN KEY (post_id) REFERENCES posts (post_id),
@@ -47,11 +47,11 @@ CREATE TABLE IF NOT EXISTS categories_posts
 CREATE TABLE IF NOT EXISTS comments
 (
     comment_id   INT          NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    parent_id    INT UNSIGNED NOT NULL,
-    top_id       INT UNSIGNED NOT NULL,
+    parent_id    INT UNSIGNED,
+    top_id       INT UNSIGNED,
     post_id      INT UNSIGNED NOT NULL,
     author_id    INT UNSIGNED NOT NULL,
-    content      VARCHAR(255) NOT NULL,
+    content      TEXT         NOT NULL,
     publish_date TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (post_id) REFERENCES posts (post_id),
     FOREIGN KEY (author_id) REFERENCES users (account_id)

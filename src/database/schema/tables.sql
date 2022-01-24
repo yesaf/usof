@@ -2,15 +2,16 @@ USE usof;
 
 CREATE TABLE IF NOT EXISTS users
 (
-    account_id      INT UNSIGNED        NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    full_name       VARCHAR(255)        NOT NULL DEFAULT '',
-    email           VARCHAR(255) UNIQUE NOT NULL,
-    login           VARCHAR(255) UNIQUE NOT NULL,
-    role            ENUM ('user', 'admin')       DEFAULT 'user',
-    rating          INT                 NOT NULL DEFAULT 0,
-    profile_picture BLOB,
-    password        VARCHAR(255)        NOT NULL,
-    create_time     TIMESTAMP           NOT NULL DEFAULT CURRENT_TIMESTAMP
+    account_id             INT UNSIGNED        NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    full_name              VARCHAR(255)        NOT NULL DEFAULT '',
+    email                  VARCHAR(255) UNIQUE NOT NULL,
+    login                  VARCHAR(255) UNIQUE NOT NULL,
+    role                   ENUM ('user', 'admin')       DEFAULT 'user',
+    rating                 INT                 NOT NULL DEFAULT 0,
+    profile_picture        BLOB,
+    password               VARCHAR(255)        NOT NULL,
+    create_time            TIMESTAMP           NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    restore_password_token VARCHAR(255)
 ) Engine = InnoDB
   CHARSET = utf8;
 
@@ -21,8 +22,7 @@ CREATE TABLE IF NOT EXISTS posts
     title        VARCHAR(255)                NOT NULL,
     content      TEXT                        NOT NULL,
     status       ENUM ('active', 'inactive') NOT NULL,
-    publish_date TIMESTAMP                   NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (author_id) REFERENCES users (account_id)
+    publish_date TIMESTAMP                   NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) Engine = InnoDB
   CHARSET = utf8;
 
@@ -39,8 +39,8 @@ CREATE TABLE IF NOT EXISTS categories_posts
     id          INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     post_id     INT UNSIGNED NOT NULL,
     category_id INT UNSIGNED NOT NULL,
-    FOREIGN KEY (post_id) REFERENCES posts (post_id),
-    FOREIGN KEY (category_id) REFERENCES categories (category_id)
+    FOREIGN KEY (post_id) REFERENCES posts (post_id) ON DELETE CASCADE,
+    FOREIGN KEY (category_id) REFERENCES categories (category_id) ON DELETE CASCADE
 ) Engine = InnoDB
   CHARSET = utf8;
 
@@ -53,8 +53,7 @@ CREATE TABLE IF NOT EXISTS comments
     author_id    INT UNSIGNED NOT NULL,
     content      TEXT         NOT NULL,
     publish_date TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (post_id) REFERENCES posts (post_id),
-    FOREIGN KEY (author_id) REFERENCES users (account_id)
+    FOREIGN KEY (post_id) REFERENCES posts (post_id) ON DELETE CASCADE
 ) Engine = InnoDB
   CHARSET = utf8;
 
@@ -65,6 +64,6 @@ CREATE TABLE IF NOT EXISTS likes
     entity_id   INT UNSIGNED             NOT NULL,
     author_id   INT UNSIGNED             NOT NULL,
     type        ENUM ('like', 'dislike') NOT NULL,
-    FOREIGN KEY (author_id) REFERENCES users (account_id)
+    FOREIGN KEY (author_id) REFERENCES users (account_id) ON DELETE CASCADE
 ) Engine = InnoDB
   CHARSET = utf8;

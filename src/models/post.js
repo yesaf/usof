@@ -159,11 +159,11 @@ class Post extends Model {
     }
   }
 
-  async deleteLike(post_id) {
+  async deleteLike(post_id, author_id) {
     try {
       const result = await this.DB.query(
-        `DELETE FROM likes WHERE entity_type='post' AND entity_id=?`,
-        post_id
+        `DELETE FROM likes WHERE entity_type='post' AND entity_id=? AND author_id=?`,
+        [post_id, author_id]
       );
       console.log(result);
       return { status: 'ok' };

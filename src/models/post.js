@@ -9,7 +9,7 @@ class Post extends Model {
     try {
       const rows = await this.DB.query(
         'SELECT * FROM posts WHERE post_id = ?',
-        id
+        [id]
       );
 
       return rows[0];
@@ -18,7 +18,7 @@ class Post extends Model {
     }
   }
 
-  async getAllPosts() {
+  async getAllPosts(/*offset = 0, limit = 50*/) {
     try {
       const rows = await this.DB.query('SELECT * FROM posts');
 
@@ -32,7 +32,7 @@ class Post extends Model {
     try {
       const rows = await this.DB.query(
         'SELECT * FROM comments WHERE post_id=?',
-        post_id
+        [post_id]
       );
 
       return rows[0];
@@ -62,7 +62,7 @@ class Post extends Model {
                  FROM categories
                  JOIN usof.categories_posts USING (category_id)
                  WHERE post_id=?`,
-        post_id
+        [post_id]
       );
 
       return rows[0];
@@ -73,12 +73,19 @@ class Post extends Model {
 
   async getAllLikes(post_id) {
     try {
-      const rows = await this.DB.query(
-        `SELECT * FROM likes WHERE entity_type='post' AND entity_id=?`,
-        post_id
-      );
-
-      return rows[0];
+      const likes = (
+        await this.DB.query(
+          `SELECT COUNT(*) AS likes FROM likes WHERE entity_type='post' AND type='like' AND entity_id=?`,
+          [post_id]
+        )
+      )[0][0].likes;
+      const dislikes = (
+        await this.DB.query(
+          `SELECT COUNT(*) AS dislikes FROM likes WHERE entity_type='post' AND type='dislike' AND entity_id=?`,
+          [post_id]
+        )
+      )[0][0].dislikes;
+      return { like: likes, dislike: dislikes };
     } catch (e) {
       console.log(e);
     }

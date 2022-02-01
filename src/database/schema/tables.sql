@@ -2,16 +2,18 @@ USE usof;
 
 CREATE TABLE IF NOT EXISTS users
 (
-    account_id             INT UNSIGNED        NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    full_name              VARCHAR(255)        NOT NULL DEFAULT '',
-    email                  VARCHAR(255) UNIQUE NOT NULL,
-    login                  VARCHAR(255) UNIQUE NOT NULL,
-    role                   ENUM ('user', 'admin')       DEFAULT 'user',
-    rating                 INT                 NOT NULL DEFAULT 0,
-    profile_picture        BLOB,
-    password               VARCHAR(255)        NOT NULL,
-    create_time            TIMESTAMP           NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    restore_password_token VARCHAR(255)
+    account_id      INT UNSIGNED        NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    full_name       VARCHAR(255)        NOT NULL DEFAULT '',
+    email           VARCHAR(255) UNIQUE NOT NULL,
+    login           VARCHAR(255) UNIQUE NOT NULL,
+    role            ENUM ('user', 'admin')       DEFAULT 'user',
+    rating          INT                 NOT NULL DEFAULT 0,
+    profile_picture BLOB,
+    password        VARCHAR(255)        NOT NULL,
+    create_time     TIMESTAMP           NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    tmp_token       VARCHAR(255),
+    tmp_token_time  TIMESTAMP,
+    deleted         BOOL                NOT NULL DEFAULT FALSE
 ) Engine = InnoDB
   CHARSET = utf8;
 
@@ -28,9 +30,9 @@ CREATE TABLE IF NOT EXISTS posts
 
 CREATE TABLE IF NOT EXISTS categories
 (
-    category_id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    title       VARCHAR(255) NOT NULL,
-    description VARCHAR(255) NOT NULL
+    category_id INT UNSIGNED        NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    title       VARCHAR(255) UNIQUE NOT NULL,
+    description VARCHAR(255)
 ) Engine = InnoDB
   CHARSET = utf8;
 

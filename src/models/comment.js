@@ -5,10 +5,10 @@ class Category extends Model {
     super();
   }
 
-  async findCategoryById(id) {
+  async findCommentById(id) {
     try {
       const rows = await this.DB.query(
-        'SELECT * FROM usof.categories WHERE category_id = ?',
+        'SELECT * FROM comments WHERE comment_id = ?',
         id
       );
 
@@ -18,9 +18,12 @@ class Category extends Model {
     }
   }
 
-  async getAllCategories() {
+  async getAllLikes(comment_id) {
     try {
-      const rows = await this.DB.query('SELECT * FROM categories');
+      const rows = await this.DB.query(
+        `SELECT * FROM likes WHERE entity_type='comment' AND entity_id=?`,
+        comment_id
+      );
 
       return rows[0];
     } catch (e) {
@@ -28,11 +31,12 @@ class Category extends Model {
     }
   }
 
-  async createNewCategory({ title, description = '' }) {
+  async createNewLike({ author_id, comment_id, type }) {
     try {
       const result = await this.DB.query(
-        'INSERT INTO usof.categories (title, description ) VALUES (?, ?)',
-        [title, description]
+        `INSERT INTO likes (author_id, entity_type, entity_id, type)
+                 VALUES (?, 'comment', ?, ?)`,
+        [author_id, comment_id, type]
       );
       console.log(result);
       return { status: 'ok' };
@@ -42,12 +46,12 @@ class Category extends Model {
     }
   }
 
-  async updateCategory({ category_id, new_title, new_description }) {
+  async updateComment({ comment_id, new_content }) {
     try {
       let result = await this.DB.query(
-        `UPDATE categories 
-                SET title=?, description=? WHERE category_id=?;`,
-        [new_title, new_description, category_id]
+        `UPDATE comments 
+                SET  content=? WHERE comment_id=?;`,
+        [new_content, comment_id]
       );
       console.log(result);
       return { status: 'ok' };
@@ -57,11 +61,11 @@ class Category extends Model {
     }
   }
 
-  async deleteCategory(id) {
+  async deleteLike(comment_id, author_id) {
     try {
       const result = await this.DB.query(
-        `DELETE FROM usof.categories WHERE category_id=?`,
-        id
+        `DELETE FROM likes WHERE entity_type='comment' AND entity_id=? AND author_id=?`,
+        [comment_id, author_id]
       );
       console.log(result);
       return { status: 'ok' };

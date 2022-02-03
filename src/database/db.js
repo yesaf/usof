@@ -6,6 +6,7 @@ let connection = mysql.createPool({
   user: 'admin' /*process.env.DB_USERNAME*/,
   password: 'qwerty123' /*process.env.DB_PASSWORD*/,
   database: 'usof' /*process.env.DB_NAME*/,
+  multipleStatements: true,
 });
 
 module.exports = connection;

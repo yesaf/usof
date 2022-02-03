@@ -5,7 +5,7 @@ class Category extends Model {
     super();
   }
 
-  async findCategoryById(id) {
+  async findById({ id }) {
     try {
       const rows = await this.DB.query(
         'SELECT * FROM usof.categories WHERE category_id = ?',
@@ -18,7 +18,7 @@ class Category extends Model {
     }
   }
 
-  async getAllCategories() {
+  async getAll() {
     try {
       const rows = await this.DB.query('SELECT * FROM categories');
 
@@ -28,7 +28,7 @@ class Category extends Model {
     }
   }
 
-  async createNewCategory({ title, description = '' }) {
+  async createNew({ title, description = '' }) {
     try {
       const result = await this.DB.query(
         'INSERT INTO usof.categories (title, description ) VALUES (?, ?)',
@@ -42,7 +42,7 @@ class Category extends Model {
     }
   }
 
-  async updateCategory({ category_id, new_title, new_description }) {
+  async update({ category_id, new_title, new_description }) {
     try {
       let result = await this.DB.query(
         `UPDATE categories 
@@ -57,7 +57,7 @@ class Category extends Model {
     }
   }
 
-  async deleteCategory(id) {
+  async delete({ id }) {
     try {
       const result = await this.DB.query(
         `DELETE FROM usof.categories WHERE category_id=?`,

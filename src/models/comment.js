@@ -1,11 +1,11 @@
 const Model = require('./index');
 
-class Category extends Model {
+class Comment extends Model {
   constructor() {
     super();
   }
 
-  async findCommentById(id) {
+  async findById({ id }) {
     try {
       const rows = await this.DB.query(
         'SELECT * FROM comments WHERE comment_id = ?',
@@ -18,7 +18,7 @@ class Category extends Model {
     }
   }
 
-  async getAllLikes(comment_id) {
+  async getAllLikes({ comment_id }) {
     try {
       const rows = await this.DB.query(
         `SELECT * FROM likes WHERE entity_type='comment' AND entity_id=?`,
@@ -46,7 +46,7 @@ class Category extends Model {
     }
   }
 
-  async updateComment({ comment_id, new_content }) {
+  async update({ comment_id, new_content }) {
     try {
       let result = await this.DB.query(
         `UPDATE comments 
@@ -61,7 +61,7 @@ class Category extends Model {
     }
   }
 
-  async deleteLike(comment_id, author_id) {
+  async deleteLike({ comment_id, author_id }) {
     try {
       const result = await this.DB.query(
         `DELETE FROM likes WHERE entity_type='comment' AND entity_id=? AND author_id=?`,
@@ -76,4 +76,4 @@ class Category extends Model {
   }
 }
 
-module.exports = new Category();
+module.exports = new Comment();

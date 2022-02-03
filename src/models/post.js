@@ -5,7 +5,7 @@ class Post extends Model {
     super();
   }
 
-  async findPostById(id) {
+  async findById({ id }) {
     try {
       const rows = await this.DB.query(
         'SELECT * FROM posts WHERE post_id = ?',
@@ -18,7 +18,7 @@ class Post extends Model {
     }
   }
 
-  async getAllPosts(/*offset = 0, limit = 50*/) {
+  async getAll(/*{ offset = 0, limit = 50 }*/) {
     try {
       const rows = await this.DB.query('SELECT * FROM posts');
 
@@ -28,7 +28,7 @@ class Post extends Model {
     }
   }
 
-  async getAllComments(post_id) {
+  async getAllComments({ post_id }) {
     try {
       const rows = await this.DB.query(
         'SELECT * FROM comments WHERE post_id=?',
@@ -55,7 +55,7 @@ class Post extends Model {
     }
   }
 
-  async getAllCategories(post_id) {
+  async getAllCategories({ post_id }) {
     try {
       const rows = await this.DB.query(
         `SELECT category_id, title, description
@@ -71,7 +71,7 @@ class Post extends Model {
     }
   }
 
-  async getAllLikes(post_id) {
+  async getAllLikes({ post_id }) {
     try {
       const likes = (
         await this.DB.query(
@@ -91,7 +91,7 @@ class Post extends Model {
     }
   }
 
-  async createNewPost({ author_id, title, content, categories = [] }) {
+  async createNew({ author_id, title, content, categories = [] }) {
     try {
       let result = await this.DB.query(
         `INSERT INTO posts (author_id, title, content, status)
@@ -129,7 +129,7 @@ class Post extends Model {
     }
   }
 
-  async updatePost({ post_id, new_title, new_content, new_categories = [] }) {
+  async update({ post_id, new_title, new_content, new_categories = [] }) {
     try {
       let result = await this.DB.query(
         `UPDATE posts 
@@ -152,7 +152,7 @@ class Post extends Model {
     }
   }
 
-  async deletePost(id) {
+  async delete({ id }) {
     try {
       const result = await this.DB.query(
         `DELETE FROM posts WHERE post_id=?`,
@@ -166,7 +166,7 @@ class Post extends Model {
     }
   }
 
-  async deleteLike(post_id, author_id) {
+  async deleteLike({ post_id, author_id }) {
     try {
       const result = await this.DB.query(
         `DELETE FROM likes WHERE entity_type='post' AND entity_id=? AND author_id=?`,

@@ -6,7 +6,7 @@ class User extends Model {
     super();
   }
 
-  async findUserById(id) {
+  async findById({ id }) {
     try {
       const rows = await this.DB.query(
         'SELECT * FROM users WHERE account_id = ?',
@@ -19,7 +19,7 @@ class User extends Model {
     }
   }
 
-  async findUserByEmail(email) {
+  async findByEmail({ email }) {
     try {
       const rows = await this.DB.query(
         'SELECT * FROM users WHERE email = ?',
@@ -32,7 +32,7 @@ class User extends Model {
     }
   }
 
-  async getAllUsers() {
+  async getAll() {
     try {
       const rows = await this.DB.query('SELECT * FROM users');
 
@@ -42,7 +42,7 @@ class User extends Model {
     }
   }
 
-  async createNewUser({ fullName = '', email, login, role = 'user', password }) {
+  async createNew({ fullName = '', email, login, role = 'user', password }) {
     const salt = bcrypt.genSaltSync(10);
     const user = [
       fullName,
@@ -80,7 +80,7 @@ class User extends Model {
     }
   }
 
-  async updateUser(id, { fullName, email, login }) {
+  async update(id, { fullName, email, login }) {
     try {
       const result = await this.DB.query(
         'UPDATE users SET full_name=?, email=?, login=? WHERE account_id = ?',
@@ -95,7 +95,7 @@ class User extends Model {
     }
   }
 
-  async deleteUser(id) {
+  async delete(id) {
     try {
       const result = await this.DB.query(
         'DELETE FROM users WHERE account_id = ?',

@@ -29,7 +29,7 @@ module.exports.login = async (request, response) => {
 
   const token = jwt.sign({
     email: user.email,
-    userId: user.id,
+    id: user.account_id,
   }, keys.jwt, { expiresIn: 3600 });
 
   return response
@@ -98,9 +98,50 @@ module.exports.logout = (request, response) => {
   response.json({ status: "ok", msg: "Please Log In again" });
 };
 
-module.exports.passwordReset = (request, response) => {
-  response.json({
-    passwordReset: "This is password reset router"
+module.exports.passwordReset = async (request, response) => {
+  const { email } = request.body;
+  if (!email) {
+    return response
+      .status(409)
+      .json({
+        type: "error",
+        msg: "All fields must be filled"
+      });
+  }
+
+  const [user] = User.findUserByEmail(email);
+
+  if (!user) {
+    return response
+      .status(404)
+      .json({
+        type: "error",
+        msg: "No such user exists"
+      });
+  }
+
+  const token = jwt.sign({
+    email: user.email,
+    userId: user.id,
+  }, keys.jwt, { expiresIn: 300 });
+
+  const link = `http://${request.headers.host}/api/auth/password-reset/${token}`
+
+  const mailOptions = {
+    to: user.email,
+    from: process.env.FROM_EMAIL,
+    subject: "Password change request",
+    text: `Hi ${user.full_name} \n
+       Please click on the following link ${link} to reset your password. \n\n 
+       If you did not request this, please ignore this email and your password will remain unchanged.\n`,
+  };
+
+  sgMail.send(mailOptions, (error, result) => {
+    if (error) return response.status(500).json({message: error.message});
+
+    response
+      .status(200)
+      .json({message: `A reset email has been sent to ${user.email}.`});
   });
 };
 

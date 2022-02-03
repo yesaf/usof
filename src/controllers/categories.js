@@ -1,34 +1,47 @@
-module.exports.getAll = (request, response) => {
+const Category = require('../models/category');
+
+module.exports.getAll = async (request, response) => {
+  const categories = await Category.getAll();
   response.json({
-    categories: []
+    categories
   });
 };
 
-module.exports.create = (request, response) => {
+module.exports.create = async (request, response) => {
+  const { title, description } = request.body;
+
+  const [category] = await Category.createNew({ title, description });
   response.json({
-    categories: {}
+    category
   });
 };
 
-module.exports.getCategory = (request, response) => {
+module.exports.getOne = async (request, response) => {
+  const { categoryId } = request.params;
+  const [category] = await Category.findById({ id: categoryId });
   response.json({
-    categories: {}
+    category
   });
 };
 
-module.exports.updateCategory = (request, response) => {
+module.exports.update = async (request, response) => {
+  const { categoryId } = request.params;
+  const { title, description } = request.body;
+  const [category] = await Category.update({ category_id: categoryId , new_title: title, new_description: description});
   response.json({
-    categories: {}
+    category
   });
 };
 
-module.exports.removeCategory = (request, response) => {
+module.exports.remove = async (request, response) => {
+  const { categoryId } = request.params;
+  const result = await Category.delete({ id: categoryId });
   response.json({
-    categories: {}
+    result
   });
 };
 
-module.exports.getCategoryPosts = (request, response) => {
+module.exports.getCategoryPosts = async (request, response) => {
   response.json({
     categories: {}
   });

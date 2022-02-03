@@ -65,7 +65,7 @@ class User extends Model {
     }
   }
 
-  async uploadAvatar(id, avatar) {
+  async uploadAvatar({ id, avatar }) {
     try {
       const result = await this.DB.query(
         'UPDATE users SET profile_picture=? WHERE account_id = ?',
@@ -80,7 +80,7 @@ class User extends Model {
     }
   }
 
-  async update(id, { fullName, email, login }) {
+  async update({ id, fullName, email, login }) {
     try {
       const result = await this.DB.query(
         'UPDATE users SET full_name=?, email=?, login=? WHERE account_id = ?',
@@ -95,7 +95,7 @@ class User extends Model {
     }
   }
 
-  async delete(id) {
+  async delete({ id }) {
     try {
       const result = await this.DB.query(
         'DELETE FROM users WHERE account_id = ?',
@@ -110,7 +110,7 @@ class User extends Model {
     }
   }
 
-  async checkExistEmail(email) {
+  async checkExistEmail({ email }) {
     try {
       const rows = await this.DB.query(
         'SELECT * FROM users WHERE email = ?',
@@ -123,7 +123,7 @@ class User extends Model {
     }
   }
 
-  async checkExistLogin(login) {
+  async checkExistLogin({ login }) {
     try {
       const rows = await this.DB.query(
         'SELECT * FROM users WHERE login = ?',
@@ -136,7 +136,7 @@ class User extends Model {
     }
   }
 
-  async isAdmin(id) {
+  async isAdmin({ id }) {
     try {
       const rows = await this.DB.query(
         'SELECT * FROM users WHERE account_id = ?',

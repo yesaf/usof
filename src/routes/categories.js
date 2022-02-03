@@ -4,12 +4,12 @@ const controller = require('../controllers/categories');
 const router = new Router();
 
 router.get('/', passport.authenticate('jwt', { session: false }), controller.getAll);
-router.post('/', controller.create);
+router.post('/', passport.authenticate('jwt', { session: false }), controller.create);
 
-router.get('/:categoryId', controller.getCategory);
-router.patch('/:categoryId', controller.updateCategory);
-router.delete('/:categoryId', controller.removeCategory);
+router.get('/:categoryId', passport.authenticate('jwt', { session: false }), controller.getOne);
+router.patch('/:categoryId', passport.authenticate('jwt', { session: false }), controller.update);
+router.delete('/:categoryId', passport.authenticate('jwt', { session: false }), controller.remove);
 
-router.get('/:categoryId/posts', controller.getCategoryPosts);
+router.get('/:categoryId/posts', passport.authenticate('jwt', { session: false }), controller.getCategoryPosts);
 
 module.exports = router;

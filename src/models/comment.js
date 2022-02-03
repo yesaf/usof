@@ -20,12 +20,19 @@ class Comment extends Model {
 
   async getAllLikes({ comment_id }) {
     try {
-      const rows = await this.DB.query(
-        `SELECT * FROM likes WHERE entity_type='comment' AND entity_id=?`,
-        comment_id
-      );
-
-      return rows[0];
+      const likes = (
+        await this.DB.query(
+          `SELECT COUNT(*) AS likes FROM likes WHERE entity_type='post' AND type='like' AND entity_id=?`,
+          [comment_id]
+        )
+      )[0][0].likes;
+      const dislikes = (
+        await this.DB.query(
+          `SELECT COUNT(*) AS dislikes FROM likes WHERE entity_type='post' AND type='dislike' AND entity_id=?`,
+          [comment_id]
+        )
+      )[0][0].dislikes;
+      return { like: likes, dislike: dislikes };
     } catch (e) {
       console.log(e);
     }

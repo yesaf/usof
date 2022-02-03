@@ -10,7 +10,7 @@ class User extends Model {
     try {
       const rows = await this.DB.query(
         'SELECT * FROM users WHERE account_id = ?',
-        id
+        [id]
       );
 
       return rows[0];
@@ -21,10 +21,9 @@ class User extends Model {
 
   async findByEmail({ email }) {
     try {
-      const rows = await this.DB.query(
-        'SELECT * FROM users WHERE email = ?',
-        email
-      );
+      const rows = await this.DB.query('SELECT * FROM users WHERE email = ?', [
+        email,
+      ]);
 
       return rows[0];
     } catch (e) {
@@ -99,7 +98,7 @@ class User extends Model {
     try {
       const result = await this.DB.query(
         'DELETE FROM users WHERE account_id = ?',
-        id
+        [id]
       );
 
       console.log(result);
@@ -112,10 +111,9 @@ class User extends Model {
 
   async checkExistEmail({ email }) {
     try {
-      const rows = await this.DB.query(
-        'SELECT * FROM users WHERE email = ?',
-        email
-      );
+      const rows = await this.DB.query('SELECT * FROM users WHERE email = ?', [
+        email,
+      ]);
 
       return !!rows[0].length;
     } catch (e) {
@@ -125,10 +123,9 @@ class User extends Model {
 
   async checkExistLogin({ login }) {
     try {
-      const rows = await this.DB.query(
-        'SELECT * FROM users WHERE login = ?',
-        login
-      );
+      const rows = await this.DB.query('SELECT * FROM users WHERE login = ?', [
+        login,
+      ]);
 
       return !!rows[0].length;
     } catch (e) {
@@ -140,7 +137,7 @@ class User extends Model {
     try {
       const rows = await this.DB.query(
         'SELECT * FROM users WHERE account_id = ?',
-        id
+        [id]
       );
 
       return rows[0][0].role === 'admin';

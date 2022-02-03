@@ -6,7 +6,7 @@ const keys = require("../config/keys");
 module.exports.login = async (request, response) => {
   const { email, password } = request.body;
 
-  const [user] = await User.findUserByEmail(email);
+  const [user] = await User.findByEmail({ email });
 
   if (!user) {
     return response
@@ -59,7 +59,7 @@ module.exports.register = async (request, response) => {
       });
   }
 
-  if (await User.checkExistEmail(email)) {
+  if (await User.checkExistEmail({ email })) {
     return response
       .status(409)
       .json({
@@ -68,7 +68,7 @@ module.exports.register = async (request, response) => {
       });
   }
 
-  if (await User.checkExistLogin(login)) {
+  if (await User.checkExistLogin({ login })) {
     return response
       .status(409)
       .json({
@@ -77,7 +77,7 @@ module.exports.register = async (request, response) => {
       });
   }
 
-  const result = await User.createNewUser({ email, login, password });
+  const result = await User.createNew({ email, login, password });
 
   if (result.status === "ok") {
     return response
@@ -109,7 +109,7 @@ module.exports.passwordReset = async (request, response) => {
       });
   }
 
-  const [user] = User.findUserByEmail(email);
+  const [user] = User.findUserByEmail({ email });
 
   if (!user) {
     return response

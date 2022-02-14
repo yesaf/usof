@@ -9,7 +9,20 @@ class Category extends Model {
     try {
       const rows = await this.DB.query(
         'SELECT * FROM usof.categories WHERE category_id = ?',
-        id
+        [id]
+      );
+
+      return rows[0];
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async findByTitle({ title }) {
+    try {
+      const rows = await this.DB.query(
+        'SELECT * FROM usof.categories WHERE title = ?',
+        [title]
       );
 
       return rows[0];
@@ -28,6 +41,22 @@ class Category extends Model {
     }
   }
 
+  async getAllPosts({ category_id }) {
+    try {
+      const rows = await this.DB.query(
+        `SELECT post_id, author_id, title, content, status, publish_date
+                 FROM posts
+                 JOIN categories_posts USING (post_id)
+                 WHERE category_id=?`,
+        [category_id]
+      );
+
+      return rows[0];
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
   async createNew({ title, description = '' }) {
     try {
       const result = await this.DB.query(
@@ -35,7 +64,7 @@ class Category extends Model {
         [title, description]
       );
       console.log(result);
-      return { status: 'ok' };
+      return { status: 'ok', insertId: result[0]['insertId'] };
     } catch (e) {
       console.log(e);
       return { status: 'error', msg: e.sqlMessage };
@@ -61,7 +90,7 @@ class Category extends Model {
     try {
       const result = await this.DB.query(
         `DELETE FROM usof.categories WHERE category_id=?`,
-        id
+        [id]
       );
       console.log(result);
       return { status: 'ok' };

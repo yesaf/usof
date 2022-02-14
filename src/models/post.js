@@ -1,4 +1,5 @@
 const Model = require('./index');
+const Category = require('./category');
 
 class Post extends Model {
   constructor() {
@@ -91,6 +92,31 @@ class Post extends Model {
     }
   }
 
+  async addCategories({ post_id, categories }) {
+    try {
+      let result;
+      for (const category_title of categories) {
+        result = await Category.findByTitle(category_title);
+        let categoryId;
+        if (result.length >= 1) {
+          categoryId = result[0]['id'];
+        } else {
+          result = await Category.createNew({ title: category_title });
+          categoryId = result.insertId;
+        }
+        result = await this.DB.query(
+          `INSERT INTO categories_posts (post_id, category_id)
+                     VALUES (?, ?)`,
+          [post_id, categoryId]
+        );
+      }
+      return { status: 'ok' };
+    } catch (e) {
+      console.log(e);
+      return { status: 'error', msg: e.sqlMessage };
+    }
+  }
+
   async createNew({ author_id, title, content, categories = [] }) {
     try {
       let result = await this.DB.query(
@@ -99,15 +125,12 @@ class Post extends Model {
         [author_id, title, content]
       );
       const post_id = result[0].insertId;
-      for (const category_id of categories) {
-        result = await this.DB.query(
-          `INSERT INTO categories_posts (post_id, category_id)
-                     VALUES (?, ?)`,
-          [post_id, category_id]
-        );
-      }
-      console.log(result);
-      return { status: 'ok' };
+      result = await this.addCategories({
+        post_id: post_id,
+        categories: categories,
+      });
+      if (result.status === 'error') return result;
+      return { status: 'ok', insertId: post_id };
     } catch (e) {
       console.log(e);
       return { status: 'error', msg: e.sqlMessage };
@@ -142,18 +165,20 @@ class Post extends Model {
     try {
       let result = await this.DB.query(
         `UPDATE posts 
-                SET title=?, content=? WHERE post_id=?;
-                DELETE FROM categories_posts WHERE post_id=?;`,
+                SET title=?, content=? WHERE post_id=?`,
         [new_title, new_content, post_id, post_id]
       );
-      for (const category_id of new_categories) {
-        result = await this.DB.query(
-          `INSERT INTO categories_posts (post_id, category_id)
-                     VALUES (?, ?)`,
-          [post_id, category_id]
-        );
-      }
       console.log(result);
+      result = await this.DB.query(
+        `DELETE FROM categories_posts WHERE post_id=?`,
+        [post_id]
+      );
+      console.log(result);
+      result = await this.addCategories({
+        post_id: post_id,
+        categories: new_categories,
+      });
+      if (result.status === 'error') return result;
       return { status: 'ok' };
     } catch (e) {
       console.log(e);

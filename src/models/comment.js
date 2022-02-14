@@ -81,6 +81,27 @@ class Comment extends Model {
       return { status: 'error', msg: e.sqlMessage };
     }
   }
+
+  async delete({ id }) {
+    try {
+      let result = await this.DB.query(
+        `SELECT * FROM usof.comments WHERE parent_id=?`,
+        [id]
+      );
+      for (const comment of result) {
+        await this.delete(comment.comment_id);
+      }
+      result = await this.DB.query(
+        `DELETE FROM usof.comments WHERE comment_id=?`,
+        [id]
+      );
+      console.log(result);
+      return { status: 'ok' };
+    } catch (e) {
+      console.log(e);
+      return { status: 'error', msg: e.sqlMessage };
+    }
+  }
 }
 
 module.exports = new Comment();

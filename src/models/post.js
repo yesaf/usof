@@ -1,5 +1,6 @@
 const Model = require('./index');
 const Category = require('./category');
+const Comment = require('./category');
 
 class Post extends Model {
   constructor() {
@@ -201,7 +202,14 @@ class Post extends Model {
 
   async deleteLike({ post_id, author_id }) {
     try {
-      const result = await this.DB.query(
+      let result = await this.DB.query(
+        `SELECT * FROM usof.comments WHERE post_id=?`,
+        [post_id]
+      );
+      for (const comment of result) {
+        Comment.delete(comment.comment_id);
+      }
+      result = await this.DB.query(
         `DELETE FROM likes WHERE entity_type='post' AND entity_id=? AND author_id=?`,
         [post_id, author_id]
       );

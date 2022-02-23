@@ -1,4 +1,5 @@
 const Model = require('./index');
+const User = require('./user');
 
 class Comment extends Model {
   constructor() {
@@ -53,9 +54,16 @@ class Comment extends Model {
     }
   }
 
-  async update({ comment_id, new_content }) {
+  async update({ comment_id, user_id, new_content }) {
     try {
-      let result = await this.DB.query(
+      let result = await this.findById({ id: comment_id });
+      if (result[0].author_id !== user_id) {
+        return {
+          status: 'error',
+          msg: 'You do not have enough permissions to update this comment!',
+        };
+      }
+      result = await this.DB.query(
         `UPDATE comments 
                 SET  content=? WHERE comment_id=?;`,
         [new_content, comment_id]
@@ -70,8 +78,12 @@ class Comment extends Model {
 
   async deleteLike({ comment_id, author_id }) {
     try {
-      const result = await this.DB.query(
-        `DELETE FROM likes WHERE entity_type='comment' AND entity_id=? AND author_id=?`,
+      let result = await this.DB.query(
+        `DELETE
+           FROM likes
+           WHERE entity_type = 'comment'
+             AND entity_id = ?
+             AND author_id = ?`,
         [comment_id, author_id]
       );
       console.log(result);
@@ -82,14 +94,17 @@ class Comment extends Model {
     }
   }
 
-  async delete({ id }) {
+  async delete({ id, user_id }) {
     try {
-      let result = await this.DB.query(
-        `SELECT * FROM usof.comments WHERE parent_id=?`,
-        [id]
-      );
-      for (const comment of result[0]) {
-        await this.delete({ id: comment.comment_id });
+      let result = await this.findById({ id: id });
+      if (
+        result[0].author_id !== user_id ||
+        !(await User.isAdmin({ id: user_id }))
+      ) {
+        return {
+          status: 'error',
+          msg: 'You do not have enough permissions to delete this comment!',
+        };
       }
       result = await this.DB.query(
         `DELETE FROM usof.comments WHERE comment_id=?`,

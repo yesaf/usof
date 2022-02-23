@@ -88,8 +88,8 @@ class Comment extends Model {
         `SELECT * FROM usof.comments WHERE parent_id=?`,
         [id]
       );
-      for (const comment of result) {
-        await this.delete(comment.comment_id);
+      for (const comment of result[0]) {
+        await this.delete({ id: comment.comment_id });
       }
       result = await this.DB.query(
         `DELETE FROM usof.comments WHERE comment_id=?`,

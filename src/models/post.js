@@ -97,10 +97,12 @@ class Post extends Model {
     try {
       let result;
       for (const category_title of categories) {
-        result = await Category.findByTitle(category_title);
+        result = await Category.findByTitle({ title: category_title });
+        console.log('Here --------');
+        console.log(result);
         let categoryId;
         if (result.length >= 1) {
-          categoryId = result[0]['id'];
+          categoryId = result[0]['category_id'];
         } else {
           result = await Category.createNew({ title: category_title });
           categoryId = result.insertId;
@@ -189,9 +191,14 @@ class Post extends Model {
 
   async delete({ id }) {
     try {
-      const result = await this.DB.query(`DELETE FROM posts WHERE post_id=?`, [
-        id,
-      ]);
+      let result = await this.DB.query(
+        `SELECT * FROM usof.comments WHERE post_id=?`,
+        [id]
+      );
+      for (const comment of result[0]) {
+        await Comment.delete({ id: comment.comment_id });
+      }
+      result = await this.DB.query(`DELETE FROM posts WHERE post_id=?`, [id]);
       console.log(result);
       return { status: 'ok' };
     } catch (e) {
@@ -202,14 +209,7 @@ class Post extends Model {
 
   async deleteLike({ post_id, author_id }) {
     try {
-      let result = await this.DB.query(
-        `SELECT * FROM usof.comments WHERE post_id=?`,
-        [post_id]
-      );
-      for (const comment of result) {
-        Comment.delete(comment.comment_id);
-      }
-      result = await this.DB.query(
+      const result = await this.DB.query(
         `DELETE FROM likes WHERE entity_type='post' AND entity_id=? AND author_id=?`,
         [post_id, author_id]
       );

@@ -41,7 +41,12 @@ class Comment extends Model {
 
   async createNewLike({ author_id, comment_id, type }) {
     try {
-      const result = await this.DB.query(
+      let result = await this.deleteLike({
+        author_id: author_id,
+        comment_id: comment_id,
+      });
+      console.log(result);
+      result = await this.DB.query(
         `INSERT INTO likes (author_id, entity_type, entity_id, type)
                  VALUES (?, 'comment', ?, ?)`,
         [author_id, comment_id, type]

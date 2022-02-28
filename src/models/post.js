@@ -150,14 +150,10 @@ class Post extends Model {
 
   async createNewLike({ author_id, post_id, type }) {
     try {
-      let result = await this.DB.query(
-        `DELETE
-                 FROM likes
-                 WHERE author_id = ?
-                   AND entity_id = ?
-                   AND entity_type = 'post'`,
-        [author_id, post_id]
-      );
+      let result = await this.deleteLike({
+        author_id: author_id,
+        post_id: post_id,
+      });
       console.log(result);
       result = await this.DB.query(
         `INSERT INTO likes (author_id, entity_type, entity_id, type)

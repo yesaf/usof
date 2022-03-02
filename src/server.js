@@ -3,10 +3,10 @@ const setupMiddlewares = require('./middlewares');
 const { PORT } = require('./config/index');
 
 const authRouter = require('./routes/auth');
-const usersRouter = require('./routes/users')
-const postsRouter = require('./routes/posts')
-const categoriesRouter = require('./routes/categories')
-const commentsRouter = require('./routes/comments')
+const usersRouter = require('./routes/users');
+const postsRouter = require('./routes/posts');
+const categoriesRouter = require('./routes/categories');
+const commentsRouter = require('./routes/comments');
 
 const app = express();
 setupMiddlewares(app);

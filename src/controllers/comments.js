@@ -1,41 +1,114 @@
-module.exports.getComment = (request, response) => {
+const Comment = require('../models/comment');
+const Post = require('../models/post');
+const { getUserJWT } = require('../utils/utils');
+const { checkValidId } = require('../utils/validation');
+
+module.exports.getComment = async (request, response) => {
+  const { postId } = request.params;
+  if (!checkValidId(postId)) {
+    return response.json({
+      type: 'error',
+      msg: 'Invalid parameters'
+    });
+  }
+
+  const comments = await Post.getAllComments({ post_id: postId });
   response.json({
-    comment: {}
+    comments
   });
 };
 
-module.exports.create = (request, response) => {
+module.exports.update = async (request, response) => {
+  const { commentId } = request.params;
+  if (!checkValidId(commentId)) {
+    return response.json({
+      type: 'error',
+      msg: 'Invalid parameters'
+    });
+  }
+  const { content } = request.body;
+
+  if (!content) {
+    return response.json({
+      type: 'error',
+      msg: 'Content not filled'
+    });
+  }
+
+  const user = getUserJWT(request.headers['authorization']);
+  const result = await Comment.update({ user_id: user.id, comment_id: commentId, content });
+
   response.json({
-    comment: {}
+    result
   });
 };
 
-module.exports.update = (request, response) => {
+module.exports.remove = async (request, response) => {
+  const { commentId } = request.params;
+  if (!checkValidId(commentId)) {
+    return response.json({
+      type: 'error',
+      msg: 'Invalid parameters'
+    });
+  }
+  const user = getUserJWT(request.headers['authorization']);
+  const result = await Comment.delete({ user_id: user.id, comment_id: commentId });
   response.json({
-    comment: {}
+    result
   });
 };
 
-module.exports.remove = (request, response) => {
+module.exports.getLikes = async (request, response) => {
+  const { commentId } = request.params;
+  if (!checkValidId(commentId)) {
+    return response.json({
+      type: 'error',
+      msg: 'Invalid parameters'
+    });
+  }
+
+  const likes = await Comment.getAllLikes({ comment_id: commentId });
   response.json({
-    comment: {}
+    likes
   });
 };
 
-module.exports.getLikes = (request, response) => {
+module.exports.like = async (request, response) => {
+  const { commentId } = request.params;
+  if (!checkValidId(commentId)) {
+    return response.json({
+      type: 'error',
+      msg: 'Invalid parameters'
+    });
+  }
+
+  const { type } = request.body;
+  if (type !== 'like' || type !== 'dislike') {
+    return response.json({
+      type: 'error',
+      msg: 'Like not filled'
+    });
+  }
+
+  const user = getUserJWT(request.headers['authorization']);
+  const result = await Comment.createNewLike({ comment_id: commentId, type, author_id: user.id });
   response.json({
-    comment: {}
+    result
   });
 };
 
-module.exports.like = (request, response) => {
-  response.json({
-    comment: {}
-  });
-};
+module.exports.unlike = async (request, response) => {
+  const { commentId } = request.params;
+  if (!checkValidId(commentId)) {
+    return response.json({
+      type: 'error',
+      msg: 'Invalid parameters'
+    });
+  }
 
-module.exports.unlike = (request, response) => {
+  const user = getUserJWT(request.headers['authorization']);
+  const result = await Comment.deleteLike({ author_id: user.id, comment_id: commentId });
   response.json({
-    comment: {}
+    result
   });
 };

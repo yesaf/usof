@@ -1,11 +1,11 @@
-const { Strategy: JwtStrategy, ExtractJwt } = require('passport-jwt')
-const keys = require("../config/keys");
+const { Strategy: JwtStrategy, ExtractJwt } = require('passport-jwt');
 const User = require('../models/user');
+const { JWT_KEY } = require('../config');
 
 const options = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-  secretOrKey: keys.jwt
-}
+  secretOrKey: { JWT_KEY }
+};
 
 module.exports = (passport) => {
   passport.use(
@@ -14,13 +14,13 @@ module.exports = (passport) => {
         const [user] = await User.findByEmail({ email: payload.email });
 
         if (user) {
-          done(null, user)
+          done(null, user);
         } else {
-          done(null, false)
+          done(null, false);
         }
       } catch (e) {
         console.log(e);
       }
     })
-  )
-}
+  );
+};

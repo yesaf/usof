@@ -1,11 +1,11 @@
-require('dotenv').config();
 const mysql = require('mysql2/promise');
+const { DB_HOST, DB_NAME, DB_PASSWORD, DB_USERNAME } = require('../config/index');
 
 let connection = mysql.createPool({
-  host: 'localhost' /*process.env.DB_HOST*/,
-  user: 'admin' /*process.env.DB_USERNAME*/,
-  password: 'qwerty123' /*process.env.DB_PASSWORD*/,
-  database: 'usof' /*process.env.DB_NAME*/,
+  host: DB_HOST,
+  user: DB_USERNAME,
+  password: DB_PASSWORD,
+  database: DB_NAME,
   multipleStatements: true,
 });
 
